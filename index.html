@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Training Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --navy:#131b2c;
+    --navy-2:#1b2740;
+    --line:#2c3b57;
+    --silver:#c7d0e0;
+    --silver-dim:#8493ae;
+    --flag:#ff5a2e;
+    --flag-dim:#ff5a2e33;
+    --green:#3ecf8e;
+    --cream:#f4f1ea;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--navy);
+    font-family:'Inter',sans-serif;
+    color:var(--silver);
+    padding:28px 16px 60px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  #capture{
+    width:100%;
+    max-width:900px;
+    background:var(--navy);
+  }
+  .board{
+    background:var(--navy-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 24px 26px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-bottom:18px;
+    border-bottom:2px solid var(--flag);
+    padding-bottom:14px;
+  }
+  .title-block h1{
+    font-family:'Oswald',sans-serif;
+    font-size:26px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    margin:0;
+    color:var(--cream);
+  }
+  .title-block .sub{
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--silver-dim);
+    margin-top:2px;
+  }
+  .week-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .week-row label{
+    font-family:'Oswald',sans-serif;
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--silver-dim);
+  }
+  #weekInput{
+    background:var(--navy);
+    border:1px solid var(--line);
+    color:var(--cream);
+    font-family:'Oswald',sans-serif;
+    font-size:15px;
+    padding:6px 10px;
+    border-radius:5px;
+    width:180px;
+  }
+  #weekInput:focus{outline:2px solid var(--flag); outline-offset:1px;}
+
+  .scoreboard{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:20px;
+    background:var(--navy);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 16px;
+  }
+  .score-num{
+    font-family:'Oswald',sans-serif;
+    font-size:30px;
+    color:var(--flag);
+    min-width:78px;
+    text-align:center;
+  }
+  .score-bar-wrap{
+    flex:1;
+    height:10px;
+    background:var(--line);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .score-bar{
+    height:100%;
+    background:linear-gradient(90deg,var(--flag),#ffb199);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .score-label{
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--silver-dim);
+    white-space:nowrap;
+  }
+
+  .section-title{
+    font-family:'Oswald',sans-serif;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--flag);
+    margin:22px 0 8px;
+    padding-bottom:4px;
+    border-bottom:1px solid var(--line);
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  th,td{
+    padding:6px 4px;
+    text-align:center;
+    font-size:12px;
+  }
+  thead th{
+    font-family:'Oswald',sans-serif;
+    letter-spacing:0.06em;
+    color:var(--silver-dim);
+    font-size:11px;
+    text-transform:uppercase;
+    padding-bottom:8px;
+  }
+  thead th.ex-col{text-align:left;}
+  tbody tr{border-top:1px solid var(--line);}
+  td.ex-name{
+    text-align:left;
+    color:var(--cream);
+    font-size:12.5px;
+    padding-right:10px;
+    line-height:1.3;
+  }
+  td.ex-name .detail{
+    display:block;
+    color:var(--silver-dim);
+    font-size:10.5px;
+    margin-top:1px;
+  }
+  input[type="checkbox"]{
+    appearance:none;
+    -webkit-appearance:none;
+    width:19px;
+    height:19px;
+    border:1.5px solid var(--line);
+    border-radius:4px;
+    background:var(--navy);
+    cursor:pointer;
+    position:relative;
+  }
+  input[type="checkbox"]:checked{
+    background:var(--flag);
+    border-color:var(--flag);
+  }
+  input[type="checkbox"]:checked::after{
+    content:"";
+    position:absolute;
+    left:5px; top:1px;
+    width:5px; height:10px;
+    border:solid var(--navy);
+    border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  input[type="checkbox"]:focus-visible{
+    outline:2px solid var(--flag);
+    outline-offset:2px;
+  }
+
+  .controls{
+    max-width:900px;
+    width:100%;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:18px;
+  }
+  button{
+    font-family:'Oswald',sans-serif;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    font-size:12px;
+    padding:10px 18px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    cursor:pointer;
+    background:var(--navy-2);
+    color:var(--silver);
+  }
+  button:hover{border-color:var(--silver-dim);}
+  #exportBtn{
+    background:var(--flag);
+    border-color:var(--flag);
+    color:var(--navy);
+  }
+  #exportBtn:hover{background:#ff7147;}
+  #resetBtn:hover{color:var(--flag); border-color:var(--flag);}
+
+  @media (max-width:640px){
+    th,td{font-size:10.5px; padding:5px 2px;}
+    td.ex-name{font-size:11px;}
+    input[type="checkbox"]{width:16px; height:16px;}
+    .title-block h1{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="capture">
+  <div class="board">
+    <header>
+      <div class="title-block">
+        <h1>Weekly Training Log</h1>
+        <div class="sub">27-move daily routine &middot; check off each day</div>
+      </div>
+      <div class="week-row">
+        <label for="weekInput">Week of</label>
+        <input type="text" id="weekInput" placeholder="e.g. Jul 21">
+      </div>
+    </header>
+
+    <div class="scoreboard">
+      <div class="score-num" id="scoreNum">0/189</div>
+      <div class="score-bar-wrap"><div class="score-bar" id="scoreBar"></div></div>
+      <div class="score-label">completed this week</div>
+    </div>
+
+    <table id="trackTable">
+      <thead>
+        <tr>
+          <th class="ex-col">Exercise</th>
+          <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="controls">
+  <button id="resetBtn">Reset Week</button>
+  <button id="exportBtn">Export as JPG</button>
+</div>
+
+<script>
+const sections = [
+  { name: "Warm-Up / Mobility", items: [
+    ["Plantar Fascia Stretch (with ball)","30-60s each foot"],
+    ["Standing Wall Stretch","10-12 reps each leg"],
+    ["Standing Hamstring and Nerve Floss Stretch","6-8 reps each leg"],
+    ["Alternating Quad Stretch","5 reps each leg, 2s hold"],
+    ["Single-Arm Pectoral Stretch","8 reps per arm, 3-5s hold"],
+    ["Angel Stretch","8 reps"],
+  ]},
+  { name: "Floor Core Activation", items: [
+    ["On-the-Floor Marching","20 reps each side"],
+    ["On-the-Floor 100","50 reps, 30s rest, 50 reps"],
+    ["Glute Bridge","10-12 reps, 3s hold"],
+    ["Push-Up","8-15 reps"],
+  ]},
+  { name: "Plank Series", items: [
+    ["Bent-Knee Side Plank","5 reps each side"],
+    ["Side Plank with Leg Raise","8-12 reps each side"],
+    ["Side Plank March","8-10 reps each side"],
+    ["Traditional Plank","15-20s"],
+  ]},
+  { name: "Posterior Chain", items: [
+    ["Superman","8 reps, 3-4s hold"],
+    ["Alternating Arm/Leg Raise","12 reps total"],
+    ["Kneeling Hip Hinge","8-10 reps"],
+    ["Single-Leg Hip Hinge","6-8 reps each side"],
+    ["Ankle-Tap Downward Dog","8-10 reps"],
+    ["Spider-Man Stretch","8-10 reps"],
+  ]},
+  { name: "Standing / Balance / Lower Body", items: [
+    ["Standing Pelvic Tilt","8-10 reps"],
+    ["Thoracic Spine Rotation","10 reps"],
+    ["Single-Leg Balance Oscillation","25 reps each side"],
+    ["Sumo Lateral Squat","8-10 reps"],
+    ["Split-Stance Isometric Wall Squat","20s each side"],
+    ["Single-Leg Romanian Deadlift","6-10 reps"],
+    ["Rocket Ship","8-10 reps"],
+  ]},
+];
+
+const tbody = document.getElementById('tbody');
+let totalBoxes = 0;
+
+sections.forEach(sec => {
+  const secRow = document.createElement('tr');
+  const secCell = document.createElement('td');
+  secCell.colSpan = 8;
+  secCell.className = 'section-title';
+  secCell.textContent = sec.name;
+  secRow.appendChild(secCell);
+  tbody.appendChild(secRow);
+
+  sec.items.forEach(([name, detail]) => {
+    const row = document.createElement('tr');
+    row.className = 'ex-row';
+    const nameCell = document.createElement('td');
+    nameCell.className = 'ex-name';
+    nameCell.innerHTML = name + '<span class="detail">' + detail + '</span>';
+    row.appendChild(nameCell);
+    for (let d = 0; d < 7; d++) {
+      const cell = document.createElement('td');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.addEventListener('change', updateScore);
+      cell.appendChild(cb);
+      row.appendChild(cell);
+      totalBoxes++;
+    }
+    tbody.appendChild(row);
+  });
+});
+
+const REQUIRED_DAYS = 6;
+
+function updateScore(){
+  const rows = document.querySelectorAll('#trackTable tbody tr.ex-row');
+  let earned = 0;
+  rows.forEach(row => {
+    const checked = row.querySelectorAll('input[type="checkbox"]:checked').length;
+    earned += Math.min(checked, REQUIRED_DAYS);
+  });
+  const total = rows.length * REQUIRED_DAYS;
+  document.getElementById('scoreNum').textContent = earned + '/' + total;
+  document.getElementById('scoreBar').style.width = (earned / total * 100) + '%';
+}
+updateScore();
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.querySelectorAll('#trackTable input[type="checkbox"]').forEach(cb => cb.checked = false);
+  updateScore();
+});
+
+// default week label
+const weekInput = document.getElementById('weekInput');
+weekInput.value = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const target = document.getElementById('capture');
+  html2canvas(target, { backgroundColor: '#131b2c', scale: 2 }).then(canvas => {
+    const link = document.createElement('a');
+    const weekLabel = (weekInput.value || 'week').replace(/[^a-z0-9]+/gi, '_');
+    link.download = 'training-log-' + weekLabel + '.jpg';
+    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    link.click();
+  });
+});
+</script>
+</body>
+</html>
